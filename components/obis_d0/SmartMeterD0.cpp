@@ -75,7 +75,7 @@ namespace esphome
             (void)read_byte(dest);
 
             // check if this the start of a telegram
-            if (*dest == '/')
+            if (*dest == '/' || *dest == 0x02)
             {
                 // start of telegram detected
                 search_ = &SmartMeterD0::search_end_of_record;

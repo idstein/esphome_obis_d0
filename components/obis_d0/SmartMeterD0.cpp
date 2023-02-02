@@ -79,7 +79,12 @@ namespace esphome
             {
                 // start of telegram detected
                 search_ = &SmartMeterD0::search_end_of_record;
-                length_ = 1;
+                if (*dest == 0x02) {
+                    // Ignore STX start telegram on parsing
+                    length_ = 0;
+                } else {
+                    length_ = 1;
+                }
             }
         }
 
@@ -168,8 +173,7 @@ namespace esphome
 
             buffer_[length_ - 3] = 0; // set null terminator at end of OBIS value ")"
 
-            const char* codeStart = (buffer_[0] == 0x02) ?
-                reinterpret_cast<const char*>(&buffer_[1]) : reinterpret_cast<const char*>(&buffer_[0]);
+            const char* codeStart = reinterpret_cast<const char*>(&buffer_[0]);
 
             // search begin of OBIS value
             const char* const valueRecordStart = strchr(codeStart, '(');

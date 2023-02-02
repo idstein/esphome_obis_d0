@@ -168,7 +168,8 @@ namespace esphome
 
             buffer_[length_ - 3] = 0; // set null terminator at end of OBIS value ")"
 
-            const char* codeStart = reinterpret_cast<const char*>(&buffer_[0]);
+            const char* codeStart = (buffer_[0] == 0x02) ?
+                reinterpret_cast<const char*>(&buffer_[1]) : reinterpret_cast<const char*>(&buffer_[0]);
 
             // search begin of OBIS value
             const char* const valueRecordStart = strchr(codeStart, '(');
@@ -178,7 +179,7 @@ namespace esphome
                 return;
             }
 
-            std::string code(reinterpret_cast<const char*>(&buffer_[0]), valueRecordStart);
+            std::string code(codeStart, valueRecordStart);
             std::string value(valueRecordStart + 1, reinterpret_cast<const char*>(&buffer_[length_] - 3));
             const char* const valueStart = valueRecordStart + 1;
 
